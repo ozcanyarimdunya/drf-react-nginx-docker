@@ -1,0 +1,42 @@
+version: '3'
+services:
+  nginx:
+    build: ./nginx
+    links:
+      - frontend
+      - backend
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "8080:80"
+
+  db:
+    image: postgres
+    volumes:
+      - "db_data:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_PASSWORD:"pass123"
+
+  backend:
+    build: ./backend
+    command: sh run.sh
+    depends_on:
+      - db
+    expose:
+      - 8000
+#    ports:
+#      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    command: sh run.sh
+    depends_on:
+      - db
+    expose:
+      - 5000
+#    ports:
+#      - "5000:5000"
+
+volumes:
+  db_data: {}
